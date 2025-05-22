@@ -55,6 +55,34 @@ const PersonsToShow = ({personsToShow, handleDeletePerson}) => {
   )
 } 
 
+// 2.16 - 2.17
+
+const Notification = ({ message, typeMessage }) => {
+  console.log('typeMessage', typeMessage)
+  if (message === null) {
+    return null
+  }
+
+  if (typeMessage === 'error') {
+    return (
+    <div className="error">
+      {message}
+    </div>
+    )
+  }
+
+
+  if (typeMessage === 'aprobe') {
+    return (
+    <div className="aprobe">
+      {message}
+    </div>
+    )
+  }
+}
+
+// 2.16 - 2.17
+
 // App principal
 
 const App = () => {
@@ -77,6 +105,9 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
+  const [Message, setMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [typeMessage, setTypeMessage] = useState('error')
 
   // const addPerson = (event) => {
   //   event.preventDefault()
@@ -106,6 +137,13 @@ const App = () => {
             setPersons(persons.map(p => p.id !== returnedPerson.id ? p : returnedPerson))
             setNewName('')
             setNewNumber('')
+            setTypeMessage('aprobe')
+            setMessage(`'${returnedPerson.name}' updated with phone number: ${returnedPerson.number}`
+      )
+      setTimeout(() => {
+        setMessage(null)
+      }, 3000) //ms
+
           })
           .catch(error => {
             alert(`An error has happen with the update`)
@@ -127,6 +165,14 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName('')
       setNewNumber('')
+      setTypeMessage('aprobe')
+      setMessage(
+        `Add '${returnedPerson.name}' to the phonebook`
+      )
+      console.log('añadiendo personas')
+      setTimeout(() => {
+        setMessage(null)
+      }, 3000) //ms
     })
     }
   }
@@ -152,7 +198,13 @@ const App = () => {
           setPersons(persons.filter(person => person.id !== id))
         })
         .catch(error => {
-          alert(`The person '${person.name}' was already deleted from server`)
+          setTypeMessage('error')
+          setMessage(
+            `Information of '${person.name}' has already been removed from server`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
           setPersons(persons.filter(p => p.id !== id))
         })
     }
@@ -165,6 +217,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={Message} typeMessage={typeMessage}/>
       <FilterName filterName={filterName} handleFilterChange={handleFilterChange} />
       <h2>Add a new</h2>
       <AddPerson addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
